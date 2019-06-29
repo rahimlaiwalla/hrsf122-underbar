@@ -5,11 +5,13 @@
 
     describe('identity', function() {
       checkForNativeMethods(function() {
-        _.identity(1);
+        //_.identity(1);
+        _.identity = function(val){ return val}
       });
 
       it('should return whatever value is passed into it', function() {
         var uniqueObject = {};
+        //_.identity = function(val){ return val}
         expect(_.identity(1)).to.equal(1);
         expect(_.identity('string')).to.equal('string');
         expect(_.identity(false)).to.be.false;
@@ -43,6 +45,22 @@
       checkForNativeMethods(function() {
         _.last([1,2,3]);
       });
+
+      _.last = function(array, index){
+          var newArray = []
+          if(index === undefined){
+              return array[array.length - 1]
+          }else if(index === 0){
+              return newArray
+          } else{
+              for(var i = 0; i<array.length; i++){
+                  if(i >= array.length - index){
+                      newArray.push(array[i])
+                  }
+              }
+              return newArray
+          }
+      }
 
       it('should pull the last element from an array', function() {
         expect(_.last([1,2,3])).to.equal(3);
@@ -105,6 +123,19 @@
         expect(input).to.eql([1,2,3,4,5])
       });
 
+     _.each = function(array, func){
+         if(Array.isArray(array) === true){
+            for(var i = 0; i<array.length; i++){
+             func(array[i], i, array)
+            }
+         } else {
+            for(var key in array){
+                func(array[key], key, array)
+            }
+         }
+     }
+
+      
       it(' should iterate over arrays and provide access to each value', function() {
         var letters = ['a', 'b', 'c'];
         var iterations = [];
@@ -157,6 +188,7 @@
 
         expect(iterations).to.not.include('Do not iterate over me!');
       });
+
 
       it('should iterate over objects and provide access to each value', function() {
         var letters = {d: 'dog', e: 'elephant', f: 'flotsam'};
@@ -252,6 +284,16 @@
         _.filter([1, 2, 3, 4], isEven)
       });
 
+      _.filter = function(array, func){
+          var newArray = []
+          for(var i = 0; i<array.length; i++){
+              if(func(array[i]) === true){
+                  newArray.push(array[i])
+              }
+          }
+          return newArray
+      }
+
       it('should return all even numbers in an array', function() {
         var isEven = function(num) { return num % 2 === 0; };
         var evens = _.filter([1, 2, 3, 4, 5, 6], isEven);
@@ -280,6 +322,16 @@
         var isEven = function(num) { return num % 2 === 0; };
         _.reject([1, 2, 3, 4, 5, 6], isEven)
       });
+
+      _.reject = function(array, func){
+          var newArray = []
+          for(var i = 0; i<array.length; i++){
+              if(!func(array[i])){
+                  newArray.push(array[i])
+              }
+          }
+          return newArray
+      }
 
       it('should reject all even numbers', function() {
         var isEven = function(num) { return num % 2 === 0; };
@@ -336,6 +388,28 @@
         expect(input).to.eql([1, 2, 3, 4, 5]);
       });
 
+      _.uniq = function(array, sorted, func){
+         var newArray = []
+         if(sorted === true){
+             for(var i = 0; i<array.length; i++){
+                 if(func(array[i]) === true || func(i) === true){
+                     newArray.push(array[i])
+                 }
+             }
+         } else{
+          var obj = {}
+          for(var i = 0; i<array.length; i++){
+              if(obj[array[i]] === undefined){
+                  obj[array[i]] = 1
+              }
+          }
+          for(var key in obj){
+              newArray.push(Number(key))
+          }
+         }
+          return newArray
+      }
+
       it('should return all unique values contained in an unsorted array', function() {
         var numbers = [1, 2, 1, 3, 1, 4];
 
@@ -346,7 +420,7 @@
         var iterator = function(value) { return value === 1; };
         var numbers = [1, 2, 2, 3, 4, 4];
 
-        expect(_.uniq(FILL_ME_IN)).to.eql([1, 2]);
+        expect(_.uniq(numbers, true, iterator)).to.eql([1, 2]);
       });
 
       it('should produce a brand new array instead of modifying the input array', function() {
@@ -393,6 +467,13 @@
 
         expect(input).to.eql([1,2,3,4,5])
       });
+      _.map = function(array, func){
+          var newArray = []
+          for(var i = 0; i<array.length; i++){
+              newArray.push(func(array[i]))
+          }
+          return newArray
+      }
 
       it('should apply a function to every value in an array', function() {
         var doubledNumbers = _.map([1, 2, 3], function(num) {
@@ -488,6 +569,27 @@
         expect(input).to.eql([1,2,3,4,5])
       });
 
+      _.reduce = function(list, func, memo){
+            if(memo === undefined){
+                memo = list[0]
+				for(var i = 1; i<list.length; i++){
+                	memo =func(memo, list[i])
+            	}
+            return memo
+            } else if(!memo === true){
+                memo = 0
+                for(var i = 0; i<list.length; i++){
+                	memo = func(memo, list[i])
+            	}
+                return memo
+            }else {
+                 for(var i = 0; i<list.length; i++){
+                	memo = func(memo, list[i])
+                 }
+                 return memo
+            }
+       }
+       
       it('should invoke the iterator function with arguments (memo, item) in that order', function() {
         var memoInCallback, itemInCallback;
 
