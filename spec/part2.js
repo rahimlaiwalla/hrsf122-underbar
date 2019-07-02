@@ -76,6 +76,40 @@
         _.every([4, 5, 6], _.identity);
       });
 
+      _.every = function(list, func){
+         if(func !== undefined){
+           var newList = _.map(list, func)
+           var result = true
+           if(list.length === 0){
+             return result
+           } else{
+             _.each(newList, function(value){
+               if(result === true){
+                 if(!value === true){
+                   result = false
+                 }
+               }
+             })
+           }
+           return result
+           } else {
+             var result = true
+             if(list.length === 0){
+               return result
+             } else{
+               _.each(list, function(value){
+                 if(result === true){
+                   if(!value === true){
+                     result = false
+                   }
+                 }
+               })
+//             return result
+             }
+            return result
+           }
+      }
+
       it('passes by default for an empty collection', function() {
         expect(_.every([], _.identity)).to.be.true;
       });
@@ -122,6 +156,37 @@
       checkForNativeMethods(function() {
         _.some([4, 5, 6], _.identity);
       });
+
+      _.some = function(list, func){
+
+         var result = false
+         if(list.length === 0){
+             return result
+         }
+
+         if(func !== undefined){
+           var newList = _.map(list, func)
+           _.each(newList, function(value){
+               if(result === false){
+                 if(!value === false){
+                   result = true
+                 }
+               }
+             })
+           return result
+         } else {
+           _.each(list, function(value){
+              if(result === false){
+                if(!value === false){
+                  result = true
+                }
+              }
+           })
+           return result
+         }
+      }
+
+
 
       it('should fail by default for an empty collection', function() {
         expect(_.some([])).to.be.false;
@@ -176,6 +241,19 @@
         expect(extended).to.equal(destination);
       });
 
+      _.extend = function(destination, source, source2, source3){
+          _.each(source, function(value, key){
+              destination[key] = value
+          })
+          _.each(source2, function(value, key){
+              destination[key] = value
+          })
+          _.each(source3, function(value, key){
+              destination[key] = value
+          })
+          return destination
+      }
+
       it('should extend an object with the attributes of another', function() {
         var destination = {};
         var source = { a: 'b' };
@@ -221,6 +299,25 @@
       it('should be a function', function() {
         expect(_.defaults).to.be.an.instanceOf(Function);
       });
+
+      _.defaults = function(destination, source, source1, source2){
+          _.each(source, function(value, key){
+             if(destination[key] === undefined){
+                 destination[key] = value
+             } 
+          })
+          _.each(source1, function(value, key){
+             if(destination[key] === undefined){
+                 destination[key] = value
+             } 
+          })
+          _.each(source2, function(value, key){
+             if(destination[key] === undefined){
+                 destination[key] = value
+             } 
+          })
+          return destination
+      }
 
       it('should return the original target object', function() {
         /*
@@ -416,8 +513,89 @@
           return a + b;
         });
       })
+    
 
       it('should produce the same result as the non-memoized version', function() {
+
+        
+        var add = function(a, b){
+        
+        return a + b
+            }
+
+//          _.memoize = function(func){
+//              var a, b
+//             var once =  _.once(func)
+//                return once
+                          
+//          }
+
+//          _.memoize = function(func){
+//             var cache = {}
+
+//             var key = JSON.stringify(arguments)
+//             if(cache[key] === undefined){
+//                 var result = func
+//                 cache[key] = result
+//                 return result
+
+//             } 
+            
+//          }
+
+//          _.memoize = function(func){
+//            var count = 0
+//            var array = [] 
+//            var array2 = []
+// //            var arrlength = false
+//            var bool = true
+//            for(var i = 0; i<arguments.length; i++){
+//                array.push(arguments[i])
+//            }
+
+//            if(count === 0){
+//                return func
+//                count += 1
+//            }
+//            if(count > 0){
+//              for(var i = 0; i<arguments.length; i++){
+//                  array2.push(arguments[i])
+//              }
+// //              if(array.length === array2.length){
+// //                  arrlength = true
+// //              }
+//             for(var i=0; i<array.length; i++){
+//               if(array[i] !== array2[i]){
+//                    bool === false
+//                    break
+//                }
+//             } 
+//             if(bool === false){
+//                 return func
+//                 }
+
+//          }
+//          }
+
+  _.memoize = function(func){
+	var cache = {};
+    return function(){
+      var key = JSON.stringify(arguments);
+      if (cache[key]===undefined){
+		var val = func.apply(null, arguments);
+        cache[key] = 1;
+// 		console.log(cache)
+        return val; 
+      }
+
+  }
+
+}
+
+          
+        var memoAdd = _.memoize(add)
+
+
         expect(add(1, 2)).to.equal(3);
         expect(memoAdd(1, 2)).to.equal(3);
       });
@@ -475,6 +653,11 @@
         _.delay(callback, 100);
       })
 
+      
+      _.delay = function(callback, time, argument1, argument2){
+        setTimeout(function (){return callback.apply(null, arguments)}, time, argument1, argument2);
+      }
+
       it('should only execute the function after the specified wait time', function() {
         _.delay(callback, 100);
         clock.tick(99);
@@ -498,6 +681,18 @@
       checkForNativeMethods(function() {
         _.shuffle([1, 2, 3, 4])
       })
+
+
+      _.shuffle = function(array){
+          var newArray = []
+          for(var i = 0; i<array.length; i = i+2){
+            var slicedArray = array.slice(i, i+2)
+            var reversedSlicedArray = slicedArray.reverse()
+            newArray.push(reversedSlicedArray)
+          }
+          var flatArray = newArray.flat()
+          return flatArray
+      }
 
       it('should not modify the original object', function() {
         var numbers = [4, 5, 6];

@@ -467,11 +467,19 @@
 
         expect(input).to.eql([1,2,3,4,5])
       });
-      _.map = function(array, func){
+//       _.map = function(array, func){
+//           var newArray = []
+//           for(var i = 0; i<array.length; i++){
+//               newArray.push(func(array[i]))
+//           }
+//           return newArray
+//       }
+
+       _.map = function(array, func){
           var newArray = []
-          for(var i = 0; i<array.length; i++){
-              newArray.push(func(array[i]))
-          }
+              _.each(array, function(value){
+                  newArray.push(func(value))
+          })
           return newArray
       }
 
@@ -569,26 +577,50 @@
         expect(input).to.eql([1,2,3,4,5])
       });
 
-      _.reduce = function(list, func, memo){
+//       _.reduce = function(list, func, memo){
+//             if(memo === undefined){
+//                 memo = list[0]
+// 				for(var i = 1; i<list.length; i++){
+//                 	memo =func(memo, list[i])
+//             	}
+//             return memo
+//             } else if(!memo === true){
+//                 memo = 0
+//                 for(var i = 0; i<list.length; i++){
+//                 	memo = func(memo, list[i])
+//             	}
+//                 return memo
+//             }else {
+//                  for(var i = 0; i<list.length; i++){
+//                 	memo = func(memo, list[i])
+//                  }
+//                  return memo
+//             }
+//        }
+
+
+        _.reduce = function(list, func, memo){
             if(memo === undefined){
                 memo = list[0]
-				for(var i = 1; i<list.length; i++){
-                	memo =func(memo, list[i])
-            	}
+                var slicedList = list.slice(1, list.length)
+				_.each(slicedList, function(value){
+                	memo =func(memo, value)
+            	})
             return memo
             } else if(!memo === true){
                 memo = 0
-                for(var i = 0; i<list.length; i++){
-                	memo = func(memo, list[i])
-            	}
+                _.each(list, function(value){
+                	memo =func(memo, value)
+            	})
                 return memo
             }else {
-                 for(var i = 0; i<list.length; i++){
-                	memo = func(memo, list[i])
-                 }
+                 _.each(list, function(value){
+                	memo =func(memo, value)
+            	})
                  return memo
             }
        }
+
        
       it('should invoke the iterator function with arguments (memo, item) in that order', function() {
         var memoInCallback, itemInCallback;
